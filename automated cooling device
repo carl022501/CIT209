@@ -1,0 +1,103 @@
+//Automated Cooling System Device
+//Pin Setup
+int redPin = 5;
+int greenPin = 6;
+int yellowPin = 7;
+int sensor_pin = A0;
+int buzzer_pin = 4;
+int motor_fan = 3;
+
+//Temp Setup
+int celsius = 0;
+int fahrenheit = 0;
+int baselineTemp = 0;
+//ON & OFF
+void redPinOn(){
+  digitalWrite(redPin, HIGH);
+}
+void redPinOff(){
+  digitalWrite(redPin, LOW);
+}
+void greenPinOn(){
+  digitalWrite(greenPin, HIGH);
+}
+void greenPinOff(){
+  digitalWrite(greenPin, LOW);
+}
+void yellowPinOn(){
+  digitalWrite(yellowPin, HIGH);
+}
+void yellowPinOff(){
+  digitalWrite(yellowPin, LOW);
+}
+void buzzerPinOn(){
+  digitalWrite(buzzer_pin, HIGH);
+}
+void buzzerPinOff(){
+  digitalWrite(buzzer_pin, LOW);
+}
+void motorFanMax(){
+  analogWrite(motor_fan, 255);
+}
+void motorFanMid(){
+  analogWrite(motor_fan, 128);
+}
+void motorFanOff(){
+  analogWrite(buzzer_pin, 0);
+}
+
+
+
+void setup()
+{
+ pinMode(sensor_pin, INPUT);
+ Serial.begin(9600);
+ pinMode(redPin, OUTPUT);
+ pinMode(greenPin, OUTPUT);
+ pinMode(yellowPin, OUTPUT);
+ pinMode(motor_fan, OUTPUT);
+ pinMode(buzzer_pin, OUTPUT);
+
+ 
+}
+
+void loop() 
+{
+ //Temperature
+ celsius = map(((analogRead(A0) - 20) * 3.04), 0, 1023, -40, 125);
+
+  
+  Serial.print(celsius);
+  Serial.println(" Degree Celsius ");
+  
+  //RedPin above Room Temperature >37
+  //Buzzer On and Fan at Maximum
+  if (celsius > 37)
+  {
+    redPinOn();
+    greenPinOff();
+    yellowPinOff();
+    motorFanMax();
+    buzzerPinOn();
+  }
+  //GreenPin Room Temperature >=27 && <=37
+  //Buzzer Off and Fan at Normal
+  else if (celsius >=27 && celsius <= 37)
+  {
+    redPinOff();
+    greenPinOn();
+    yellowPinOff();
+    motorFanMid();
+    buzzerPinOff();
+  }
+  //Yellow below Room Temperature < 27
+  //Buzzer On and Fan Off
+  else if (celsius < 27)
+  {
+    redPinOff();
+    greenPinOff();
+    yellowPinOn();
+    motorFanOff();
+    buzzerPinOn();
+  }
+}
